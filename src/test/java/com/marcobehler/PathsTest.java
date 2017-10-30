@@ -61,18 +61,4 @@ public class PathsTest {
     }
 
 
-    @Test
-    public void paths() throws Exception {
-        Path absolutePath = Paths.get("C:/dev/files/windows/readme.txt");  // operating system independent!
-
-        Path relativePath = Paths.get("./windows/versions/../readme.txt");
-        assertThat(relativePath.isAbsolute()).isFalse();
-        assertThat(Files.exists(relativePath)).isTrue();
-
-        System.out.println("relativePath = " + relativePath);;
-        System.out.println("relativePath.toAbsolutePath() = " + relativePath.toAbsolutePath());
-        System.out.println("relativePath.normalize().toAbsolutePath() = " + relativePath.normalize().toAbsolutePath());
-
-        System.out.println(Paths.get("C:/dev/files").relativize(absolutePath));
-    }
 }
