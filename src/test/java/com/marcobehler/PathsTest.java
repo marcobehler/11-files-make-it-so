@@ -3,10 +3,13 @@ package com.marcobehler;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,5 +45,19 @@ public class PathsTest {
         Path path = Paths.get("C:/dev/files/windows/readme.txt");  // operating system independent!
         Files.write(path, "what is going on...ääüüüöö".getBytes(StandardCharsets.ISO_8859_1));
         assertThat(Files.exists(path));
+    }
+
+    @Test
+    public void move_and_delete_file() throws Exception {
+        Path path = Paths.get("C:/dev/files/windows/");  // operating system independent!
+        Files.walk(path)
+                .sorted(Comparator.reverseOrder())
+                .forEach(p -> {
+                    try {
+                        Files.delete(p);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }); // :(
     }
 }
