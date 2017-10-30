@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,16 +20,16 @@ public class PathsTest {
     @Test // path == file
     public void path_exists() throws Exception {
         Path path = Paths.get("C:\\dev\\files\\windows\\license.txt");
-        assertThat(Files.exists(path));
+        assertThat(Files.exists(path)).isTrue();
 
         path = Paths.get("C:/dev/files/windows/license.txt");  // operating system independent!
-        assertThat(Files.exists(path));
+        assertThat(Files.exists(path)).isTrue();
 
         path = Paths.get("C:", "dev", "files", "windows", "license.txt");
-        assertThat(Files.exists(path));
+        assertThat(Files.exists(path)).isTrue();
 
         path = Paths.get("C:", "dev", "files", "windows").resolve("license.txt"); // resolve == getchild
-        assertThat(Files.exists(path));
+        assertThat(Files.exists(path)).isTrue();
     }
 
     @Test
@@ -44,7 +43,7 @@ public class PathsTest {
     public void can_write_to_path() throws Exception {
         Path path = Paths.get("C:/dev/files/windows/readme.txt");  // operating system independent!
         Files.write(path, "what is going on...ääüüüöö".getBytes(StandardCharsets.ISO_8859_1));
-        assertThat(Files.exists(path));
+        assertThat(Files.exists(path)).isTrue();
     }
 
     @Test
@@ -59,5 +58,21 @@ public class PathsTest {
                         e.printStackTrace();
                     }
                 }); // :(
+    }
+
+
+    @Test
+    public void paths() throws Exception {
+        Path absolutePath = Paths.get("C:/dev/files/windows/readme.txt");  // operating system independent!
+
+        Path relativePath = Paths.get("./windows/versions/../readme.txt");
+        assertThat(relativePath.isAbsolute()).isFalse();
+        assertThat(Files.exists(relativePath)).isTrue();
+
+        System.out.println("relativePath = " + relativePath);;
+        System.out.println("relativePath.toAbsolutePath() = " + relativePath.toAbsolutePath());
+        System.out.println("relativePath.normalize().toAbsolutePath() = " + relativePath.normalize().toAbsolutePath());
+
+        System.out.println(Paths.get("C:/dev/files").relativize(absolutePath));
     }
 }
