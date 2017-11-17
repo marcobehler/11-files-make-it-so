@@ -61,4 +61,16 @@ public class PathsTest {
     }
 
 
+    @Test
+    public void list_files_1() throws Exception {
+        Files.list(Paths.get("C:\\dev\\files\\windows")).forEach(System.out::println);
+        System.out.println("-------");
+
+        Files.newDirectoryStream(Paths.get("C:\\dev\\files\\windows"), path -> Files.isRegularFile(path) && path.toString().endsWith("txt"))
+                .forEach(System.out::println);
+        System.out.println("-------");
+
+        Files.walk(Paths.get("C:\\dev\\files\\windows"))
+                .forEach(System.out::println);
+    }
 }
