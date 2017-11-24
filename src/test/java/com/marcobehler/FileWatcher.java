@@ -19,34 +19,34 @@ public class FileWatcher {
                 ENTRY_DELETE,
                 ENTRY_MODIFY);
 
-        for (;;) {
+        for (; ; ) {
 
-            // wait for key to be signaled
-            WatchKey key;
             try {
-                key = watcher.take();
-            } catch (InterruptedException x) {
-                return;
-            }
-            for (WatchEvent<?> event: key.pollEvents()) {
-                WatchEvent.Kind<?> kind = event.kind();
+                WatchKey key = watcher.take();
 
-                if (kind == OVERFLOW) {
-                    continue;
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    WatchEvent.Kind<?> kind = event.kind();
+
+                    if (kind == OVERFLOW) {
+                        continue;
+                    }
+
+                    // The relative(!) filename is the
+                    // context of the event.
+                    WatchEvent<Path> ev = (WatchEvent<Path>) event;
+                    Path filename = ev.context();
+
+                    Path child = dir.resolve(filename);
+                    System.out.format("File %s was modified %s: !%n", child.toAbsolutePath(), ev.kind());
                 }
 
-                // The filename is the
-                // context of the event.
-                WatchEvent<Path> ev = (WatchEvent<Path>)event;
-                Path filename = ev.context();
+                boolean valid = key.reset();
+                if (!valid) {
+                    break;
+                }
 
-                Path child = dir.resolve(filename);
-                System.out.format("File %s was modified %s: !%n", child.toAbsolutePath(), ev.kind());
-            }
-
-            boolean valid = key.reset();
-            if (!valid) {
-                break;
+            } catch (InterruptedException x) {
+                throw new RuntimeException(x); // TODO handle
             }
         }
     }

@@ -17,6 +17,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PathsTest {
 
+    @Test
+    public void list_files() throws Exception {
+        Files.list(Paths.get("C:\\dev\\files\\windows")).forEach(System.out::println);
+        System.out.println("======================");
+
+        Files.newDirectoryStream(Paths.get("C:\\dev\\files\\windows"),
+                path -> Files.isRegularFile(path) && path.toString().endsWith("txt")
+        ).forEach(System.out::println);
+
+        System.out.println("======================");
+        Files.walk(Paths.get("C:\\dev\\files\\windows")).forEach(System.out::println);
+
+    }
+
     @Test // path == file
     public void path_exists() throws Exception {
         Path path = Paths.get("C:\\dev\\files\\windows\\license.txt");
