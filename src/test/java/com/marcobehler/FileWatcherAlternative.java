@@ -1,42 +1,51 @@
 package com.marcobehler;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+/**
+ * Thanks for watching this episode! Send any feedback to info@marcobehler.com!
+ */
 public class FileWatcherAlternative {
-    // A hardcoded path to a folder you are monitoring .
-    public static final String FOLDER =
-            "C:\\dev\\files\\windows";
 
     public static void main(String[] args) throws Exception {
-        // The monitor will perform polling on the folder every 5 seconds
-        final long pollingInterval = 5 * 1000;
+        Path dir = Paths.get("C:\\dev\\files\\windows");
 
-        File folder = new File(FOLDER);
+        FileAlterationMonitor monitor = new FileAlterationMonitor(1000); // ms
+        FileAlterationObserver observer = new FileAlterationObserver(dir.toFile());
+        observer.addListener(new FileAlterationListener() {
+            @Override
+            public void onStart(FileAlterationObserver observer) {
 
-        if (!folder.exists()) {
-            // Test to see if monitored folder exists
-            throw new RuntimeException("Directory not found: " + FOLDER);
-        }
+            }
 
-        FileAlterationObserver observer = new FileAlterationObserver(folder);
-        FileAlterationMonitor monitor =
-                new FileAlterationMonitor(pollingInterval);
-        FileAlterationListener listener = new FileAlterationListenerAdaptor() {
-            // Is triggered when a file is created in the monitored folder
+            @Override
+            public void onDirectoryCreate(File directory) {
+
+            }
+
+            @Override
+            public void onDirectoryChange(File directory) {
+
+            }
+
+            @Override
+            public void onDirectoryDelete(File directory) {
+
+            }
+
             @Override
             public void onFileCreate(File file) {
                 try {
-                    // "file" is the reference to the newly created file
-                    System.out.println("File created: "
-                            + file.getCanonicalPath());
+                    System.out.println("File created: " + file.getCanonicalPath());
                 } catch (IOException e) {
-                    e.printStackTrace(System.err);
+                    e.printStackTrace();
                 }
             }
 
@@ -49,23 +58,16 @@ public class FileWatcherAlternative {
                 }
             }
 
-            // Is triggered when a file is deleted from the monitored folder
             @Override
             public void onFileDelete(File file) {
-                try {
-                    // "file" is the reference to the removed file
-                    System.out.println("File removed: "
-                            + file.getCanonicalPath());
-                    // "file" does not exists anymore in the location
-                    System.out.println("File still exists in location: "
-                            + file.exists());
-                } catch (IOException e) {
-                    e.printStackTrace(System.err);
-                }
-            }
-        };
 
-        observer.addListener(listener);
+            }
+
+            @Override
+            public void onStop(FileAlterationObserver observer) {
+
+            }
+        });
         monitor.addObserver(observer);
         monitor.start();
     }
