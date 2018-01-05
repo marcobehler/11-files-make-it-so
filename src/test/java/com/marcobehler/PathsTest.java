@@ -3,6 +3,7 @@ package com.marcobehler;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -73,6 +74,54 @@ public class PathsTest {
                     }
                 }); // :(
     }
+
+
+
+    @Test
+    public void createTemporaryFile() {
+        try {
+            Path tempFile1 = Files.createTempFile(null, ".myapp");
+            System.out.format("The temporary file" +
+                    " has been created: %s%n", tempFile1);
+
+            Path tempFile2 = Files.createTempFile(Paths.get("c:/dev/files/"), null, ".myapp");
+            System.out.format("The temporary file" +
+                    " has been created: %s%n", tempFile2);
+
+            tempFile1.toFile().deleteOnExit();
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    Files.delete(tempFile1);
+                } catch (IOException e) {}
+            }));
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
