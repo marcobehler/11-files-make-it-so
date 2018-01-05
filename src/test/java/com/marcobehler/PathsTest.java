@@ -3,13 +3,16 @@ package com.marcobehler;
 
 import org.junit.Test;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -75,4 +78,48 @@ public class PathsTest {
     }
 
 
+    @Test
+    public void reading_files() {
+        Charset charset = Charset.forName("ISO-8859-1");
+
+        try (InputStream in = Files.newInputStream(Paths.get("C:\\dev\\files\\windows\\readme.txt"));
+             BufferedReader reader =
+                     new BufferedReader(new InputStreamReader(in))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException x) {
+            System.err.println(x);
+        }
+
+
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get("C:\\dev\\files\\windows\\readme.txt"), charset)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
+        }
+    }
+
+    @Test
+    public void writingFiles() {
+        String string = "testme";
+        try (OutputStream out = new BufferedOutputStream(
+                Files.newOutputStream(Paths.get("C:\\dev\\files\\windows\\versions\\hulu.txt")))) {
+
+            out.write(string.getBytes(), 0, "testme".length());
+        } catch (IOException x) {
+            System.err.println(x);
+        }
+        /*Charset charset = Charset.forName("US-ASCII");
+        String s = ...;
+        try (BufferedWriter writer = Files.newBufferedWriter(file, charset)) {
+            writer.write(s, 0, s.length());
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
+        }*/
+    }
 }
