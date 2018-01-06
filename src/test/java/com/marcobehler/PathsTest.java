@@ -18,6 +18,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PathsTest {
 
+
+    @Test
+    public void create_temporary_file() throws IOException {
+        Path tempFile1 = Files.createTempFile(null, ".jpeg"); // java.io.tmpdir setting!
+        System.out.println(tempFile1);
+
+        Path tempFile2 = Files.createTempFile(Paths.get("c:/dev/files"), null, ".jpeg"); // java.io.tmpdir setting!
+        System.out.println(tempFile2);
+
+        //tempFile1.toFile().deleteOnExit(); // once jvm exits! does not work with in memory fs
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                Files.delete(tempFile2);
+            } catch (IOException e) {}
+
+        }));
+    }
+
     @Test
     public void list_files() throws Exception {
         Files.list(Paths.get("C:\\dev\\files\\windows")).forEach(System.out::println);
@@ -74,53 +93,6 @@ public class PathsTest {
                     }
                 }); // :(
     }
-
-
-
-    @Test
-    public void createTemporaryFile() {
-        try {
-            Path tempFile1 = Files.createTempFile(null, ".myapp");
-            System.out.format("The temporary file" +
-                    " has been created: %s%n", tempFile1);
-
-            Path tempFile2 = Files.createTempFile(Paths.get("c:/dev/files/"), null, ".myapp");
-            System.out.format("The temporary file" +
-                    " has been created: %s%n", tempFile2);
-
-            tempFile1.toFile().deleteOnExit();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                try {
-                    Files.delete(tempFile1);
-                } catch (IOException e) {}
-            }));
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
