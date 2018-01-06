@@ -4,10 +4,13 @@ package com.marcobehler;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,4 +78,25 @@ public class PathsTest {
     }
 
 
+    @Test
+    public void name() {
+        ByteBuffer copy = ByteBuffer.allocate(12);
+
+        try (FileChannel fc = (FileChannel.open(Paths.get("C:\\dev\\files\\windows\\randomaccess.txt"), StandardOpenOption.READ, StandardOpenOption.WRITE))) {
+            int nread;
+            do {
+                nread = fc.read(copy,60);
+            } while (nread != -1 && copy.hasRemaining());
+
+            // Write "I was here!" at the beginning of the file.
+            fc.position(0);
+            fc.write(ByteBuffer.wrap("hello world".getBytes()));
+
+            String converted = new String(copy.array(), "UTF-8");
+            System.out.println(converted);
+
+        } catch (IOException x) {
+            System.out.println("I/O Exception: " + x);
+        }
+    }
 }
